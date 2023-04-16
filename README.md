@@ -8,7 +8,7 @@ Speech recognition, also known as automatic speech recognition (ASR), computer s
 <li>Explore the application of the transformer network in speech recognition</li>
 </ul>
 
-## Matrial
+## Material
 <ul>
 <li>OpenAI Whisper: https://github.com/openai/whisper </li>
 </ul>
