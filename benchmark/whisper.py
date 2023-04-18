@@ -5,10 +5,6 @@ from transformers import WhisperProcessor, WhisperForConditionalGeneration, Whis
 
 import os
 
-# device = "cuda:0" if torch.cuda.is_available() else "cpu"
-# processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
-# model = WhisperForConditionalGeneration.from_pretrained("./whisper-large-v2",
-#                                                         low_cpu_mem_usage=True)
 default_model = 'whisper-large-v2'
 default_model_dir = os.path.dirname(os.path.realpath(__file__)) + '/models'
 default_models_path = f'{default_model_dir}/{default_model}'
