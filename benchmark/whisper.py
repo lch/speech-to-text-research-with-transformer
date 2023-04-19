@@ -1,7 +1,8 @@
 from transformers import pipeline
 import torch
 
-from transformers import WhisperProcessor, WhisperForConditionalGeneration, WhisperTokenizer, WhisperFeatureExtractor
+from transformers import WhisperProcessor, WhisperForConditionalGeneration
+from transformers import TFWhisperForConditionalGeneration
 
 import os
 
@@ -24,7 +25,7 @@ class Whisper:
         self.language = language
         self.model_path = model_path
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
-        self.device = "cpu"
+        # self.device = "cpu"
         self.chunk_length = chunk_length
 
     def load_processor(self):
@@ -32,14 +33,15 @@ class Whisper:
         self.tokenizer = self.processor.tokenizer
         self.feature_extractor = self.processor.feature_extractor
 
-        # self.tokenizer = WhisperTokenizer.from_pretrained(
-        #     self.model_path, language=self.language, task='transcribe')
-        # self.feature_extractor = WhisperFeatureExtractor.from_pretrained(
-        #     self.model_path)
-
     def load_model(self, low_mem: bool):
         self.model = WhisperForConditionalGeneration.from_pretrained(
             self.model_path, low_cpu_mem_usage=low_mem)
+        self.model.config.forced_decoder_ids = self.processor.get_decoder_prompt_ids(
+            language=self.language, task="transcribe")
+
+    def load_model_tf(self, low_mem: bool):
+        self.model = TFWhisperForConditionalGeneration.from_pretrained(
+            self.model_path)
         self.model.config.forced_decoder_ids = self.processor.get_decoder_prompt_ids(
             language=self.language, task="transcribe")
 
@@ -53,10 +55,23 @@ class Whisper:
             device=self.device,
         )
 
-    def pre(self, low_mem=False):
+    def construct_pipeline_tf(self):
+        self.pipeline = pipeline(
+            self.task,
+            model=self.model,
+            tokenizer=self.tokenizer,
+            feature_extractor=self.feature_extractor,
+            chunk_length_s=self.chunk_length,
+        )
+
+    def pre(self, model='torch', low_mem=False):
         self.load_processor()
-        self.load_model(low_mem=low_mem)
-        self.construct_pipeline()
+        if model == 'torch':
+            self.load_model(low_mem=low_mem)
+            self.construct_pipeline()
+        elif model == 'tensorflow':
+            self.load_model_tf(low_mem=low_mem)
+            self.construct_pipeline_tf()
 
     def regoconize(self, audio_array):
         if not hasattr(self, 'model'):
