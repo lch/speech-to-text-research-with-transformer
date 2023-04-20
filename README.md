@@ -1,4 +1,4 @@
-# Transformer-for-speech-recognition
+# Speech-to-text Research with Transformer
 ## Background
 A transformer is a deep learning model that adopts the mechanism of self-attention. It is used primarily in the fields of natural language processing (NLP) and computer vision (CV) .\
 Speech recognition, also known as automatic speech recognition (ASR), computer speech recognition, or speech-to-text, is a capability which enables a program to process human speech into a written format.
